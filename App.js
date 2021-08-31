@@ -1,21 +1,76 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
+import Header from "./src/components/Header";
+import InputForm from "./src/components/InputForm";
+import Sandbox from "./src/components/Sandbox";
+import TodoItem from "./src/components/TodoItem";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+  const [todos, setTodos] = useState([
+    { text: "Learn React Native", key: "1" },
+    { text: "Understand Fundamentals", key: "2" },
+    { text: "Make project", key: "3" },
+  ]);
+
+  const handleAddTodo = (inputValue) => {
+    setTodos((prevTodos) => {
+      return [
+        ...prevTodos,
+        { text: inputValue, key: Math.random().toString() },
+      ];
+    });
+  };
+  const handleOnPress = (id) => {
+    setTodos((prevTodos) => {
+      return prevTodos.filter((todo) => todo.key != id);
+    });
+  };
+
+  {
+    return (
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.container}>
+          <Header />
+          <View style={styles.content}>
+            <InputForm onAddItem={handleAddTodo} />
+            <View style={styles.list}>
+              <FlatList
+                data={todos}
+                renderItem={({ item }) => {
+                  return <TodoItem item={item} onPressItem={handleOnPress} />;
+                }}
+              />
+            </View>
+          </View>
+          <StatusBar style="auto" />
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  // return <Sandbox />;
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+  },
+  content: {
+    padding: 40,
+    backgroundColor: "pink",
+    flex: 1,
+  },
+  list: {
+    flex: 1,
+    marginTop: 20,
+    // backgroundColor: "yellow",
   },
 });
